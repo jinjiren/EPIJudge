@@ -1,17 +1,20 @@
 from test_framework import generic_test
 
 
-def parity(x, cache={}):
-    def precompute_parity(x, length):
-        while length > 1:
-            length >>= 1
-            x ^= x >> length
-        return x & 1
+length = 16
+# be careful about the priority of `<<` and `-`
+bit_mask = (1 << length) - 1
+cache = dict()
 
-    length = 8
-    # be careful about the priority of `<<` and `-`
-    bit_mask = (1 << length) - 1
 
+def precompute_parity(x, length):
+    while length > 1:
+        length >>= 1
+        x ^= x >> length
+    return x & 1
+
+
+def parity(x):
     result = 0
     for i in range(64 // length):
         partial_bits = x >> (i * length) & bit_mask
