@@ -2,8 +2,18 @@ from test_framework import generic_test
 
 
 def swap_bits(x, i, j):
-    # TODO - you fill in here.
-    return 0
+    # get the value at indices i, j of x
+    x_i = x >> i & 1
+    x_j = x >> j & 1
+    # test whether they are different
+    diff = x_i ^ x_j
+    # similar to
+    # ```
+    #     if diff:
+    #         x ^= 1 << i | 1 << j
+    # ```
+    x ^= diff << i | diff << j
+    return x
 
 
 if __name__ == '__main__':
