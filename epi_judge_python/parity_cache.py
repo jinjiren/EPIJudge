@@ -1,31 +1,27 @@
 from test_framework import generic_test
 
 
-def sub_parity(x, length, cache):
-    if x in cache:
-        return cache[x]
-    while length > 1:
-        # note that we need to use `//` here, otherwise length will be `float`,
-        # and you get "unsupported operand type(s) for >>: 'int' and 'float'"
-        # I believe this is specific to python3
-        length //= 2
-        x ^= x >> length
-    cache[x] = x & 1
-    return x & 1
+def parity(x, cache={}):
+    def precompute_parity(x, length):
+        while length > 1:
+            length >>= 1
+            x ^= x >> length
+        return x & 1
 
-def parity(x):
-    from operator import xor
-    from functools import reduce
-    length = 16
-    cache = dict()
+    length = 8
+    # be careful about the priority of `<<` and `-`
+    bit_mask = (1 << length) - 1
 
     result = 0
     for i in range(64 // length):
-        print(hex(2 ** length - 1))
-        result ^= sub_parity(x >> (i * length) & (2 ** length - 1), length, cache)
-
+        partial_bits = x >> (i * length) & bit_mask
+        if partial_bits not in cache:
+            partial_parity = precompute_parity(partial_bits, length)
+            cache[partial_bits] = partial_parity
+        else:
+            partial_parity = cache[partial_bits]
+        result ^= partial_parity
     return result
-
 
 
 if __name__ == '__main__':
