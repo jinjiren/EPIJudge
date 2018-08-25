@@ -2,8 +2,9 @@ from test_framework import generic_test
 
 
 def reverse_bits(x):
-    # TODO - you fill in here.
-    return 0
+    x = '{:064b}'.format(x)
+    x = ''.join(reversed(x))
+    return int(x, 2)
 
 
 if __name__ == '__main__':
